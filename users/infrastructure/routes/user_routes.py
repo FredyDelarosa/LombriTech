@@ -1,24 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+
 from core.db.Database import get_db
-from users.infrastructure.handlers.create_user_controller import create_user_controller
-from users.domain.repositories.user_repository import get_user_by_email
-from utils.auth.hash import verify_password
-from utils.auth.auth import create_access_token
+from users.infrastructure.handlers.schemas import UserCreate, LoginRequest, Token
+from users.infrastructure.handlers.create_user_controller import (
+    register_controller,
+    login_controller,
+)
 
-router = APIRouter()
+router = APIRouter(prefix="/users", tags=["Usuarios"])
 
-@router.post("/register")
-def register(user: dict, db: Session = Depends(get_db)):
-    return create_user_controller(db, user)
+@router.post("/register", response_model=UserCreate)
+def register(user: UserCreate, db: Session = Depends(get_db)):
+    return register_controller(user, db)
 
-@router.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = get_user_by_email(db, form_data.username)
-    if not user or not verify_password(form_data.password, user.password):
-        raise HTTPException(status_code=401, detail="Credenciales inválidas")
-
-    token = create_access_token({"sub": user.email})
-    return {"access_token": token, "token_type": "bearer"}
-
+@router.post("/login", response_model=Token)
+def login(credentials: LoginRequest, db: Session = Depends(get_db)):
+    return login_controller(credentials.email, credentials.password, db)
