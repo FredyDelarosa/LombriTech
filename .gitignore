@@ -1,10 +1,7 @@
 venv/
 .venv/
-
+.vscode/
 .env
-.env.*
-
 __pycache__/
-*.py[cod]
+*.pyc
 
-**/__init__.py
