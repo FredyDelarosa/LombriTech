@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 venv/
 .venv/
+=======
+env/
+.env/
+>>>>>>> f461c46 (feat: habilitar CRUD de usuarios para el admin con autenticación y autorización)
 
 .env
 .env.*
