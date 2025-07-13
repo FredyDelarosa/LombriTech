@@ -1,15 +1,11 @@
-from compost_data.domain.compost_entity import CompostRecord
-from compost_data.domain.repositories.compos_repositories import save_record
+from compost_data.domain.ports.sensor_port import SensorPersistencePort
 
-def procesar_mensaje(mensaje: dict):
-    datos = mensaje.get("datos")
+def procesar_mensaje(sensor_tipo: str, mensaje: dict, repo: SensorPersistencePort):
+    dato = mensaje.get("valor")
     timestamp = mensaje.get("timestamp")
-    
-    record = CompostRecord(
-        timestamp=timestamp,
-        ph=datos.get("ph"),
-        turbidez=datos.get("turbidez"),
-        humedad=datos.get("humedad")
-    )
+    composta_id = 1  # Estático por ahora
 
-    save_record(record)
+    if dato is not None and timestamp:
+        repo.guardar_valor_sensor(sensor_tipo, dato, timestamp, composta_id)
+    else:
+        print(f"Mensaje inválido para {sensor_tipo}: {mensaje}")
