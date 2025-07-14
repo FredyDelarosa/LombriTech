@@ -7,7 +7,6 @@ from admin.infrastructure.service.mysql import UserSQLRepository
 from admin.domain.entities.user import User
 from utils.auth.hash import hash_password
 
-# Carga variables de entorno del archivo .env (debes tener python-dotenv instalado)
 load_dotenv()
 
 @contextmanager
@@ -43,6 +42,6 @@ def create_default_admin():
                 password=hash_password(admin_password)
             )
             repo.create_user(new_admin)
-            print("✅ Admin creado")
+            print("Admin creado")
         else:
-            print("ℹ️ Admin ya existe")
+            print("ℹAdmin ya existe")
