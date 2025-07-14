@@ -40,6 +40,21 @@ def run_broker_consumer():
     start_data_consumer()
     
 @app.on_event("startup")
+def startup_event():
+    print("Backend iniciado. Ejecutando consumidor de RabbitMQ...")
+    Thread(target=run_broker_consumer, daemon=True).start()
+
+
+@contextmanager
+def get_db_context():
+    db = next(get_db())
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+@app.on_event("startup")
 def on_startup():
     if os.getenv("CREATE_ADMIN", "false").lower() == "true":
         create_default_admin()
