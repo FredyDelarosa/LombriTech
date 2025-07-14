@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
-from core.db.Databases import get_db
+from core.db.Database import get_db
 from admin.infrastructure.service.mysql import UserSQLRepository
 from admin.domain.entities.user import User
 from utils.auth.token import verify_token

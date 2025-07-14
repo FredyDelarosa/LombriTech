@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 from threading import Thread
 from fastapi.middleware.cors import CORSMiddleware
@@ -44,28 +45,29 @@ from core.db.Databases import get_db
 from utils.auth.hash import hash_password
 from contextlib import contextmanager
 
+=======
+>>>>>>> Stashed changes
 from utils.middlewares.admin_only import AdminOnlyMiddleware
-from admin.infrastructure.routes.user_routes import router as user_routes
+from users.infrastructure.routes.user_routes import router as user_router
+from admin.infrastructure.routes.user_routes import router as admin_user_router
 from admin.infrastructure.routes.auth_routes import router as auth_routes
+import os
+from admin.infrastructure.startup import create_default_admin, get_db_context
+from admin.infrastructure.service.mysql import UserSQLRepository
+from admin.domain.entities.user import User
+from utils.auth.hash import hash_password
 
 app = FastAPI()
 
 app.add_middleware(AdminOnlyMiddleware)
-app.include_router(user_routes)
+
+app.include_router(user_router)
+app.include_router(admin_user_router)
 app.include_router(auth_routes)
-
-
-@contextmanager
-def get_db_context():
-    db = next(get_db())
-    try:
-        yield db
-    finally:
-        db.close()
-
 
 @app.on_event("startup")
 def on_startup():
+<<<<<<< Updated upstream
     with get_db_context() as db:
         repo = UserSQLRepository(db)
 
@@ -86,3 +88,7 @@ def on_startup():
             print("Admin ya existe")
 >>>>>>> f461c46 (feat: habilitar CRUD de usuarios para el admin con autenticación y autorización)
 >>>>>>> 6-featureregister
+=======
+    if os.getenv("CREATE_ADMIN", "false").lower() == "true":
+        create_default_admin()
+>>>>>>> Stashed changes
