@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from core.db.Databases import get_db
+from core.db.Database import get_db
 from admin.infrastructure.handlers.schemas import LoginRequest, TokenResponse
 from admin.infrastructure.handlers.login_user_controller import login_controller
 

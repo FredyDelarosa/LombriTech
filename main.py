@@ -45,8 +45,6 @@ def startup_event():
     Thread(target=run_broker_consumer, daemon=True).start()
 
 
-
-
 @contextmanager
 def get_db_context():
     db = next(get_db())
@@ -58,6 +56,10 @@ def get_db_context():
 
 @app.on_event("startup")
 def on_startup():
+
+    if os.getenv("CREATE_ADMIN", "false").lower() == "true":
+        create_default_admin()
+
     with get_db_context() as db:
         repo = UserSQLRepository(db)
 

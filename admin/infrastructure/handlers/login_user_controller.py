@@ -1,6 +1,6 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
-from core.db.Databases import get_db
+from core.db.Database import get_db
 from admin.application.login_user import execute as login_uc
 from admin.infrastructure.handlers.schemas import LoginRequest, TokenResponse
 
