@@ -56,5 +56,25 @@ def get_db_context():
 
 @app.on_event("startup")
 def on_startup():
+
     if os.getenv("CREATE_ADMIN", "false").lower() == "true":
         create_default_admin()
+
+    with get_db_context() as db:
+        repo = UserSQLRepository(db)
+
+        admin_email = "admin@example.com"
+        admin_user = repo.get_user_by_email(admin_email)
+
+        if not admin_user:
+            new_admin = User(
+                nombre="Admin",
+                apellidos="Admin",
+                rol="administrador",  # en minúsculas
+                correo=admin_email,
+                password=hash_password("admin123")
+            )
+            repo.create_user(new_admin)
+            print("Admin creado")
+        else:
+            print("Admin ya existe")
