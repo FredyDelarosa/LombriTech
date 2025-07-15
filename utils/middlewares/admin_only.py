@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from utils.auth.token import verify_token
-from core.db.Databases import SessionLocal
+from core.db.Database import SessionLocal
 from admin.infrastructure.service.mysql import UserSQLRepository
 
 

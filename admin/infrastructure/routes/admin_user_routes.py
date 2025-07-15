@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from core.db.Databases import get_db
+from core.db.Database import get_db
 from admin.infrastructure.handlers.schemas import UserCreate, UserPublic, UserUpdate
 from admin.infrastructure.handlers.create_user_controller import create_user_controller
 from admin.infrastructure.handlers.list_users_controller import list_users_controller
