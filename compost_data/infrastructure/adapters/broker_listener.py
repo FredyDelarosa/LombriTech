@@ -1,14 +1,15 @@
 from core.broker.rabbitmq_client import get_connection, get_channel
 from compost_data.application.process_data_usecase import procesar_mensaje
 from compost_data.infrastructure.adapters.db_writer import DBSensorWriter
+from alertas.infrastructure.adapters.config_mysql_adapter import ConfiguracionAlertaMySQLAdapter
+from core.db.Database import SessionLocal
 import json
 
 def start_data_consumer():
     connection = get_connection()
     channel = get_channel(connection)
-    
-    repo = DBSensorWriter()  
 
+    sensor_repo = DBSensorWriter()
     exchange = "amq.topic"
     routing_keys = {
         "ph": "data.compost.pH",
@@ -28,7 +29,14 @@ def start_data_consumer():
             def callback(ch, method, properties, body):
                 payload = json.loads(body.decode())
                 print(f"[{sensor_tipo.upper()}] recibido:", payload)
-                procesar_mensaje(sensor_tipo, payload, repo)
+
+                db = SessionLocal()
+                try:
+                    config_repo = ConfiguracionAlertaMySQLAdapter(db)
+                    procesar_mensaje(sensor_tipo, payload, sensor_repo, config_repo)
+                finally:
+                    db.close()
+
             return callback
 
         channel.basic_consume(
