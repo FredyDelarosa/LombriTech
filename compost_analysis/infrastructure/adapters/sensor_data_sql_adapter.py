@@ -8,11 +8,13 @@ class SensorDataSQLAdapter(DatosSensorPort):
         engine = create_engine(SQLALCHEMY_DATABASE_URL)
         query = """
         SELECT 
-            fecha, 
-            (SELECT dato FROM Ph WHERE Ph.fecha = c.fecha LIMIT 1) AS ph,
-            (SELECT dato FROM Humedad WHERE Humedad.fecha = c.fecha LIMIT 1) AS humedad,
-            (SELECT dato FROM Turbidez WHERE Turbidez.fecha = c.fecha LIMIT 1) AS turbidez
-        FROM Ph c
-        ORDER BY fecha;
+            base.fecha,
+            (SELECT dato FROM Ph WHERE Ph.fecha = base.fecha LIMIT 1) AS ph,
+            (SELECT dato FROM Humedad WHERE Humedad.fecha = base.fecha LIMIT 1) AS humedad,
+            (SELECT dato FROM Temperatura WHERE Temperatura.fecha = base.fecha LIMIT 1) AS temperatura,
+            (SELECT ec FROM C_electrica WHERE C_electrica.fecha = base.fecha LIMIT 1) AS ec,
+            (SELECT sst FROM Turbidez WHERE Turbidez.fecha = base.fecha LIMIT 1) AS sst
+        FROM Ph base
+        ORDER BY base.fecha;
         """
         return pd.read_sql_query(query, engine)
