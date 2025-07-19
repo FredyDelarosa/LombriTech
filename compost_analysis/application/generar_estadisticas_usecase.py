@@ -1,50 +1,51 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import os
 from compost_analysis.domain.ports.datos_sensor_port import DatosSensorPort
 
-OUTPUT_DIR = 'output/graficas'
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-def generar_todas_las_graficas(repo: DatosSensorPort):
+def generar_estadisticas_dict(repo: DatosSensorPort) -> dict:
     df = repo.obtener_datos_dataframe()
 
-    # 1. Matriz de correlación
-    corr = df.drop(columns="fecha").corr()
-    plt.figure(figsize=(6, 5))
-    sns.heatmap(corr, annot=True, cmap="coolwarm")
-    plt.title("Matriz de correlación")
-    plt.savefig(f"{OUTPUT_DIR}/correlacion.png")
-    plt.close()
+    # Aseguramos que fechas y columnas clave no sean NaN
+    df = df.dropna(subset=["fecha"])
 
-    # 2. Dispersión entre pares
-    sns.pairplot(df.drop(columns="fecha"))
-    plt.savefig(f"{OUTPUT_DIR}/dispersión.png")
-    plt.close()
+    # --- PROBABILIDAD DE SUBIDA/BAJADA ---
+    prob_subida = {}
+    prob_bajada = {}
+    for sensor in ["ph", "humedad", "temperatura", "ec", "sst"]:
+        if sensor in df.columns:
+            serie = df[sensor].dropna()
+            cambios = serie.diff().dropna()
+            total = len(cambios)
+            subidas = (cambios > 0).sum()
+            bajadas = (cambios < 0).sum()
+            prob_subida[sensor] = round(subidas / total, 3) if total > 0 else None
+            prob_bajada[sensor] = round(bajadas / total, 3) if total > 0 else None
 
-    for sensor in ["ph", "humedad", "turbidez"]:
-        datos = df[["fecha", sensor]].dropna()
+    # --- CORRELACIÓN ENTRE SENSORES ---
+    correlacion = (
+        df[["ph", "humedad", "temperatura", "ec", "sst"]]
+        .dropna()
+        .corr()
+        .round(3)
+        .replace({float('nan'): None})  # <== EVITAR NaN
+        .to_dict()
+    )
 
-        # 3. Histograma
-        plt.figure()
-        sns.histplot(datos[sensor], kde=True, bins=20)
-        plt.title(f"Histograma de {sensor}")
-        plt.savefig(f"{OUTPUT_DIR}/hist_{sensor}.png")
-        plt.close()
+    # --- SERIES TEMPORALES ---
+    series_temporales = {}
+    for sensor in ["ph", "humedad", "temperatura", "ec", "sst"]:
+        if sensor in df.columns:
+            datos = df[["fecha", sensor]].dropna()
+            series_temporales[sensor] = [
+                {"timestamp": row["fecha"].isoformat(), "value": round(row[sensor], 3)}
+                for _, row in datos.iterrows()
+            ]
 
-        # 4. Boxplot
-        plt.figure()
-        sns.boxplot(x=datos[sensor])
-        plt.title(f"Boxplot de {sensor}")
-        plt.savefig(f"{OUTPUT_DIR}/boxplot_{sensor}.png")
-        plt.close()
+    return {
+        "probabilidad": {
+            "subida": prob_subida,
+            "bajada": prob_bajada
+        },
+        "correlacion": correlacion,
+        "series_temporales": series_temporales
+    }
 
-        # 5. Gráfica temporal
-        plt.figure()
-        sns.lineplot(x=datos["fecha"], y=datos[sensor])
-        plt.title(f"Serie temporal de {sensor}")
-        plt.xticks(rotation=45)
-        plt.tight_layout()
-        plt.savefig(f"{OUTPUT_DIR}/temporal_{sensor}.png")
-        plt.close()
