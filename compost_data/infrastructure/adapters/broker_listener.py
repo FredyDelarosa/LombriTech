@@ -14,7 +14,8 @@ def start_data_consumer():
     routing_keys = {
         "ph": "data.compost.pH",
         "humedad": "data.compost.humedad",
-        "turbidez": "data.compost.turbidez"
+        "turbidez": "data.compost.turbidez",
+        "conductividad": "data.compost.conductividad"
     }
 
     channel.exchange_declare(exchange=exchange, exchange_type='topic', durable=True)

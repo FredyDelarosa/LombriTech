@@ -1,7 +1,9 @@
-from core.db.Database import SessionLocal
+from requests import Session
+from core.db.Database import SessionLocal, get_db
 from sqlalchemy import text
 from datetime import datetime
 from compost_data.domain.ports.sensor_port import SensorPersistencePort
+from compost_data.infrastructure.models.turbidez import Turbidez
 
 SENSOR_TABLAS = {
     "ph": "Ph",
@@ -36,3 +38,38 @@ class DBSensorWriter(SensorPersistencePort):
             print("Error al guardar en DB:", e)
         finally:
             db.close()
+            
+    def guardar_conductividad_electrica(self, ec, tds, timestamp, composta_id):
+        from compost_data.infrastructure.models.c_electrica import ConductividadElectrica
+
+        db = SessionLocal()
+        try:
+            registro = ConductividadElectrica(
+                ec=ec,
+                tds=tds,
+                fecha=timestamp,
+                composta_id=composta_id
+            )
+            db.add(registro)
+            db.commit()
+        except Exception as e:
+            db.rollback()
+            print(f"Error guardando conductividad eléctrica: {e}")
+        finally:
+            db.close()
+    
+    def guardar_turbidez(self, ntu: float, sst: float, timestamp: str, composta_id: int):
+        db: Session = next(get_db())
+        try:
+            nueva = Turbidez(
+                ntu=ntu,
+                sst=sst,
+                fecha=timestamp,
+                composta_id=composta_id
+            )
+            db.add(nueva)
+            db.commit()
+            print("Turbidez guardada.")
+        except Exception as e:
+            db.rollback()
+            print("Error al guardar turbidez:", e)
