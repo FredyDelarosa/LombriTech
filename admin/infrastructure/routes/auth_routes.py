@@ -5,7 +5,7 @@ from core.db.Database import get_db
 from admin.infrastructure.handlers.schemas import LoginRequest, TokenResponse
 from admin.infrastructure.handlers.login_user_controller import login_controller
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter(tags=["Auth"])  # ❌ quitamos prefix="/auth"
 
 @router.post("/login", response_model=TokenResponse, status_code=status.HTTP_200_OK)
 async def login_endpoint(

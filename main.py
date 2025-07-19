@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+
 from threading import Thread
 from fastapi.middleware.cors import CORSMiddleware
 from admin.infrastructure.startup import create_default_admin
@@ -48,7 +49,26 @@ def run_broker_consumer():
 def startup_event():
     print("Backend iniciado. Ejecutando consumidor de RabbitMQ...")
     Thread(target=run_broker_consumer, daemon=True).start()
+from contextlib import contextmanager
 
+from core.db.Database import Base, engine, get_db
+from users.infrastructure.routes.user_routes import router as user_router
+from utils.middlewares.admin_only import AdminOnlyMiddleware
+from admin.infrastructure.routes.admin_user_routes import router as admin_user_routes
+from admin.infrastructure.routes.auth_routes import router as auth_routes
+from admin.infrastructure.startup import create_default_admin
+
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(title="LombriTech API")
+
+# Middleware que protege solo las rutas de administración
+app.add_middleware(AdminOnlyMiddleware, protected_prefixes=("/admin/users",))
+
+# Rutas públicas y protegidas
+app.include_router(user_router)
+app.include_router(admin_user_routes, prefix="/admin/users")
+app.include_router(auth_routes, prefix="/auth")
 
 @contextmanager
 def get_db_context():
@@ -58,7 +78,7 @@ def get_db_context():
     finally:
         db.close()
 
-
+# Crear admin al iniciar
 @app.on_event("startup")
 def on_startup():
 
@@ -83,3 +103,5 @@ def on_startup():
             print("Admin creado")
         else:
             print("Admin ya existe")
+def startup_event():
+    create_default_admin()
