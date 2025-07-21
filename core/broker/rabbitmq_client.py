@@ -18,17 +18,17 @@ def get_connection():
             credentials=credentials
         )
         connection = pika.BlockingConnection(parameters)
-        print(f"✅ Conexión a RabbitMQ establecida en {RABBITMQ_HOST}:{RABBITMQ_PORT}")
+        print(f"Conexión a RabbitMQ establecida en {RABBITMQ_HOST}:{RABBITMQ_PORT}")
         return connection
     except Exception as e:
-        print(f"❌ Error al conectar a RabbitMQ: {e}")
+        print(f"Error al conectar a RabbitMQ: {e}")
         raise
 
 def get_channel(connection: pika.BlockingConnection):
     try:
         channel = connection.channel()
-        print("📡 Canal creado correctamente")
+        print("Canal creado correctamente")
         return channel
     except Exception as e:
-        print(f"❌ Error al crear canal: {e}")
+        print(f"Error al crear canal: {e}")
         raise

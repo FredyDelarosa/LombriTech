@@ -1,6 +1,15 @@
+<<<<<<< HEAD
 venv/
 .venv/
+<<<<<<< HEAD
 .vscode/
+=======
+=======
+env/
+.env/
+>>>>>>> f461c46 (feat: habilitar CRUD de usuarios para el admin con autenticación y autorización)
+
+>>>>>>> 6-featureregister
 .env
 __pycache__/
 *.pyc
