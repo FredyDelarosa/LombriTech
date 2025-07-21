@@ -15,7 +15,8 @@ def start_data_consumer():
         "ph": "data.compost.pH",
         "humedad": "data.compost.humedad",
         "turbidez": "data.compost.turbidez",
-        "conductividad": "data.compost.conductividad"
+        "conductividad": "data.compost.conductividad",
+        "temperatura": "data.compost.temperatura",
     }
 
     channel.exchange_declare(exchange=exchange, exchange_type='topic', durable=True)

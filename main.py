@@ -19,6 +19,8 @@ from utils.middlewares.admin_only import AdminOnlyMiddleware
 from admin.infrastructure.routes.user_routes import router as user_routes
 from admin.infrastructure.routes.auth_routes import router as auth_routes
 
+from compost_analysis.infrastructure.websockets.analysis_ws import router as ws_analysis
+
 from core.db.Database import Base, engine
 from users.domain.entities import user
 import os
@@ -40,6 +42,7 @@ app.include_router(user_router)
 app.include_router(compost_router)
 app.include_router(analysis_router)
 app.include_router(alerta_router)
+app.include_router(ws_analysis)
 
 def run_broker_consumer():
     start_data_consumer()

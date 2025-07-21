@@ -13,8 +13,10 @@ class SensorDataSQLAdapter(DatosSensorPort):
             (SELECT dato FROM Humedad WHERE Humedad.fecha = base.fecha LIMIT 1) AS humedad,
             (SELECT dato FROM Temperatura WHERE Temperatura.fecha = base.fecha LIMIT 1) AS temperatura,
             (SELECT ec FROM C_electrica WHERE C_electrica.fecha = base.fecha LIMIT 1) AS ec,
+            (SELECT tds FROM C_electrica WHERE C_electrica.fecha = base.fecha LIMIT 1) AS tds,
             (SELECT sst FROM Turbidez WHERE Turbidez.fecha = base.fecha LIMIT 1) AS sst
         FROM Ph base
         ORDER BY base.fecha;
         """
+
         return pd.read_sql_query(query, engine)
