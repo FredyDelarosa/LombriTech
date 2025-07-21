@@ -1,4 +1,4 @@
-from users.domain.repositories.user_repository import get_user_by_email
+from admin.domain.repositories.user_repository import get_user_by_email
 from utils.auth.hash import verify_password
 from utils.auth.token import create_access_token
 from fastapi import HTTPException, status

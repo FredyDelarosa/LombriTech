@@ -1,6 +1,5 @@
 import os
 from datetime import datetime, timedelta
-
 from authlib.jose import jwt, JoseError
 from dotenv import load_dotenv
 
@@ -21,9 +20,10 @@ def create_access_token(data: dict,
 
     header = {"alg": ALGORITHM}
     token = jwt.encode(header, to_encode, SECRET_KEY)
-    return token.decode("utf-8")
+    return token
 
 def verify_token(token: str) -> dict | None:
+ 
     try:
         claims = jwt.decode(token, SECRET_KEY)
         claims.validate()

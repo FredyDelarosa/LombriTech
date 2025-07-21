@@ -4,9 +4,9 @@ from admin.application.create_user_uc import execute as uc_create
 from admin.infrastructure.handlers.schemas import UserCreate
 
 async def create_user_controller(
-    request: Request,
-    db: Session,
-    user_data: UserCreate,
+    request: Request = None,
+    db: Session = None,
+    user_data: UserCreate = None,
 ):
-    current_user = request.state.user  # viene del middleware
+    current_user = getattr(request.state, "user", None) if request else None
     return await uc_create(db, user_data, current_user)
