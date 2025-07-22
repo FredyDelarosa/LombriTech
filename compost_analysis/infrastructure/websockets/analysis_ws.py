@@ -13,7 +13,10 @@ async def websocket_estadisticas(websocket: WebSocket):
     try:
         while True:
             datos = generar_estadisticas_dict(repo)
-            await websocket.send_json(datos)
+            # Convertir numpy.int64 a int estándar de Python
+            datos_serializables = {k: int(v) if hasattr(v, 'item') else v 
+                                 for k, v in datos.items()}
+            await websocket.send_json(datos_serializables)
             await asyncio.sleep(10)
     
     except WebSocketDisconnect:
