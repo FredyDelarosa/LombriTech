@@ -1,43 +1,60 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from threading import Thread
+import os
 from contextlib import contextmanager
 
 from core.db.Database import Base, engine, get_db
 from utils.middlewares.admin_only import AdminOnlyMiddleware
 from admin.infrastructure.routes.admin_user_routes import router as admin_user_routes
 from admin.infrastructure.routes.auth_routes import router as auth_routes
+from compost_data.infrastructure.routes.data_router import router as compost_router
+from compost_analysis.infrastructure.routes.analysis_routes import router as analysis_router
+from alertas.infrastructure.routes.alerta_routes import router as alerta_router
+from compost_analysis.infrastructure.websockets.analysis_ws import router as ws_analysis
+from compost_data.infrastructure.adapters.broker_listener import start_data_consumer
+
 from admin.infrastructure.startup import create_default_admin
 
+# Crear las tablas si no existen
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="LombriTech API")
 
-origins = [
-    "http://localhost:4200",
-]
-
+# Configurar CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["http://localhost:4200"],
     allow_credentials=True,
-    allow_methods=["*"],  # Permite GET, POST, PUT, DELETE, etc.
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Middlewares
 app.add_middleware(AdminOnlyMiddleware, protected_prefixes=("/admin",))
 
+# Rutas
 app.include_router(admin_user_routes, prefix="/admin")
 app.include_router(auth_routes, prefix="/auth")
+app.include_router(user_router)
+app.include_router(compost_router)
+app.include_router(analysis_router)
+app.include_router(alerta_router)
+app.include_router(ws_analysis)
 
-@contextmanager
-def get_db_context():
-    db = next(get_db())
-    try:
-        yield db
-    finally:
-        db.close()
+# Consumidor RabbitMQ en hilo separado
+def run_broker_consumer():
+    print("🌀 Iniciando consumidor de RabbitMQ...")
+    Thread(target=start_data_consumer, daemon=True).start()
 
-# Crear admin al iniciar
+# Evento de inicio
 @app.on_event("startup")
 def startup_event():
+    print("🚀 Backend iniciado.")
+    create_default_admin()
+    run_broker_consumer()
+
+# Crear admin
+@app.on_event("startup")
+def on_startup():
     create_default_admin()

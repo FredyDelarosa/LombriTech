@@ -5,7 +5,6 @@ from core.db.Database import Base
 class User(Base):
     __tablename__ = "usuarios"
     __table_args__ = {'extend_existing': True}
-
     id = Column(Integer, primary_key=True, index=True)
     rol = Column(String(25), nullable=False)
     nombre = Column(String(25), nullable=False)
