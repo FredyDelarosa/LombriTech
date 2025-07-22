@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import contextmanager
 
 from core.db.Database import Base, engine, get_db
@@ -11,9 +12,21 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="LombriTech API")
 
-app.add_middleware(AdminOnlyMiddleware, protected_prefixes=("/admin/users",))
+origins = [
+    "http://localhost:4200",
+]
 
-app.include_router(admin_user_routes, prefix="/admin/users")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],  # Permite GET, POST, PUT, DELETE, etc.
+    allow_headers=["*"],
+)
+
+app.add_middleware(AdminOnlyMiddleware, protected_prefixes=("/admin",))
+
+app.include_router(admin_user_routes, prefix="/admin")
 app.include_router(auth_routes, prefix="/auth")
 
 @contextmanager
