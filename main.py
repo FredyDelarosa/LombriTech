@@ -36,7 +36,6 @@ app.add_middleware(AdminOnlyMiddleware, protected_prefixes=("/admin",))
 # Rutas
 app.include_router(admin_user_routes, prefix="/admin")
 app.include_router(auth_routes, prefix="/auth")
-app.include_router(user_router)
 app.include_router(compost_router)
 app.include_router(analysis_router)
 app.include_router(alerta_router)

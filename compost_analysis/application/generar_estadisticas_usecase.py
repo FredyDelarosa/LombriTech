@@ -69,6 +69,14 @@ def generar_estadisticas_dict(repo: DatosSensorPort) -> dict:
                 "Alto": int(alto)
             }
 
+    # --- VALORES INDIVIDUALES MÁS RECIENTES ---
+    valores_individuales = {}
+    ultimo_registro = df.sort_values("fecha", ascending=False).head(1)
+    for sensor in sensores:
+        if sensor in df.columns:
+            valor = ultimo_registro[sensor].values[0]
+            valores_individuales[sensor] = round(float(valor), 3) if pd.notnull(valor) else None
+
     return {
         "probabilidad": {
             "subida": prob_subida,
@@ -77,5 +85,6 @@ def generar_estadisticas_dict(repo: DatosSensorPort) -> dict:
         "correlacion": correlacion,
         "series_temporales": series_temporales,
         "histogramas": histogramas,
-        "clasificaciones": clasificaciones
+        "clasificaciones": clasificaciones,
+        "valores_individuales": valores_individuales  # ⬅️ nuevo campo agregado aquí
     }
