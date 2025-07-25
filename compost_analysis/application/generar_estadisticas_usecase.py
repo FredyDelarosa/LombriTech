@@ -21,14 +21,31 @@ def generar_estadisticas_dict(repo: DatosSensorPort) -> dict:
             prob_bajada[sensor] = round(float(bajadas) / total, 3) if total > 0 else None
 
     # --- CORRELACIÓN ENTRE SENSORES ---
-    correlacion = (
-        df[sensores]
-        #.dropna()
-        .corr()
-        .round(3)
-        .replace({float('nan'): None})
-        .to_dict()
-    )
+    pares_correlacion = [("temperatura", "humedad"), ("ph", "tds")]
+    correlaciones_especificas = {}
+
+    for s1, s2 in pares_correlacion:
+        if s1 in df.columns and s2 in df.columns:
+            datos = df[[s1, s2]].dropna()
+            if not datos.empty:
+                correlacion_valor = datos[s1].corr(datos[s2])
+                correlaciones_especificas[f"{s1}_{s2}"] = {
+                    "valor": round(correlacion_valor, 3) if pd.notna(correlacion_valor) else None,
+                    "x": datos[s1].round(3).tolist(),
+                    "y": datos[s2].round(3).tolist()
+                }
+            else:
+                correlaciones_especificas[f"{s1}_{s2}"] = {
+                    "valor": None,
+                    "x": [],
+                    "y": []
+                }
+        else:
+            correlaciones_especificas[f"{s1}_{s2}"] = {
+                "valor": None,
+                "x": [],
+                "y": []
+            }
 
     # --- SERIES TEMPORALES ---
     series_temporales = {}
@@ -74,7 +91,7 @@ def generar_estadisticas_dict(repo: DatosSensorPort) -> dict:
             "subida": prob_subida,
             "bajada": prob_bajada
         },
-        "correlacion": correlacion,
+        "correlaciones_especificas": correlaciones_especificas,
         "series_temporales": series_temporales,
         "histogramas": histogramas,
         "clasificaciones": clasificaciones
