@@ -33,14 +33,10 @@ class SensorDataSQLAdapter(DatosSensorPort):
         LEFT JOIN Turbidez ON all_dates.fecha = Turbidez.fecha
         ORDER BY all_dates.fecha;
         """
-        # Asegúrate de que las columnas numéricas se conviertan a tipos numéricos,
-        # ya que pandas.read_sql_query puede inferir object si hay NULLs o tipos mixtos.
-        # Las columnas decimal(X,Y) deberían ser numéricas por defecto.
         df = pd.read_sql_query(query, engine)
 
-        # Convertir 'fecha' a datetime y las columnas de sensores a numérico si no lo son
         df['fecha'] = pd.to_datetime(df['fecha'])
         for col in ["ph", "humedad", "temperatura", "ec", "tds", "sst"]:
-            df[col] = pd.to_numeric(df[col], errors='coerce') # 'coerce' convertirá valores no numéricos a NaN
+            df[col] = pd.to_numeric(df[col], errors='coerce')
 
         return df
