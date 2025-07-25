@@ -11,4 +11,5 @@ class User(Base):
     apellidos = Column(String(50), nullable=False)
     correo = Column(String(100), unique=True, nullable=False)
     password = Column("contrasena_hash", String, nullable=False)
+    usuario_telegram = Column(String(50), nullable=True)
     created_at = Column("creado_en", DateTime, default=datetime.utcnow)

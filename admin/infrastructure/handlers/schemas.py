@@ -9,6 +9,7 @@ class UserCreate(BaseModel):
     correo: EmailStr
     password: str
     password_confirm: str  
+    usuario_telegram: str | None = None
 
 
 class UserUpdate(BaseModel):
@@ -18,6 +19,7 @@ class UserUpdate(BaseModel):
     correo: EmailStr
     password: str
     password_confirm: str
+    usuario_telegram: str | None = None
 
 class UserPublic(BaseModel):
     id: int
@@ -26,7 +28,7 @@ class UserPublic(BaseModel):
     rol: str
     correo: EmailStr
     created_at: datetime
-
+    usuario_telegram: str | None = None
     model_config = ConfigDict(from_attributes=True)
 
 

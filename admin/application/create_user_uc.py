@@ -27,6 +27,7 @@ async def execute(db, user_data, current_user=None):
         nombre=user_data.nombre,
         apellidos=user_data.apellidos,
         correo=user_data.correo,
-        password=hash_password(user_data.password)
+        password=hash_password(user_data.password),
+        usuario_telegram=user_data.usuario_telegram 
     )
     return create_user(db, nuevo)
