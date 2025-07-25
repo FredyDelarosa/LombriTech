@@ -7,5 +7,4 @@ async def list_users_controller(
     order_by: str,
     db: Session,
 ):
-    # current_user = request.state.user  # disponible si lo necesitas
     return await list_users_uc(db, order_by)
