@@ -22,5 +22,7 @@ async def get_current_user_controller(request: Request, db: Session):
     return {
         "Nombre": f"{user.nombre} {user.apellidos}",
         "Correo": user.correo,
-        "Rol": user.rol
+        "Rol": user.rol,
+        "userTelegram": user.usuario_telegram,
+        "emailTelegram": user.correo
     }
