@@ -13,6 +13,13 @@ from alertas.application.gestionar_alertas_usecase import (
 from alertas.infrastructure.schemas import AlertaCreate, AlertaUpdate, AlertaResponse
 from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from core.db.Database import get_db
+from alertas.infrastructure.schemas import NotificacionRequest
+from alertas.application.enviar_notificacion_usuario_uc import enviar_notificacion_usuario_uc
+from alertas.infrastructure.adapters.telegram_notificacion_adapter import TelegramNotificacionAdapter
+
 router = APIRouter(prefix="/alertas", tags=["Alertas"])
 
 @router.post("/", response_model=AlertaResponse, status_code=status.HTTP_201_CREATED)
@@ -47,3 +54,12 @@ def eliminar_alerta(alerta_id: int, db: Session = Depends(get_db)):
     repo = AlertaMySQLRepository(db)
     if not eliminar_alerta_usecase(repo, alerta_id):
         raise HTTPException(status_code=404, detail="Alerta no encontrada")
+
+@router.post("/usuario/{user_id}")
+def enviar_notificacion_a_usuario(
+    user_id: int,
+    datos: NotificacionRequest,
+    db: Session = Depends(get_db),
+):
+    notificador = TelegramNotificacionAdapter()
+    return enviar_notificacion_usuario_uc(db, user_id, datos.mensaje, notificador)

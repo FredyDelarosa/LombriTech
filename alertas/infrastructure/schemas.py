@@ -21,3 +21,6 @@ class AlertaResponse(AlertaBase):
 
     class Config:
         orm_mode = True
+
+class NotificacionRequest(BaseModel):
+    mensaje: str

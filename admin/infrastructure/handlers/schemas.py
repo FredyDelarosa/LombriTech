@@ -1,6 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel, EmailStr, ConfigDict
-
+from pyparsing import Optional
+from typing import Optional
 
 class UserCreate(BaseModel):
     nombre: str
@@ -9,7 +10,7 @@ class UserCreate(BaseModel):
     correo: EmailStr
     password: str
     password_confirm: str  
-    usuario_telegram: str | None = None
+    usuario_telegram: int | None = None
 
 
 class UserUpdate(BaseModel):
@@ -19,7 +20,7 @@ class UserUpdate(BaseModel):
     correo: EmailStr
     password: str
     password_confirm: str
-    usuario_telegram: str | None = None
+    usuario_telegram: int | None = None
 
 class UserPublic(BaseModel):
     id: int
@@ -28,7 +29,7 @@ class UserPublic(BaseModel):
     rol: str
     correo: EmailStr
     created_at: datetime
-    usuario_telegram: str | None = None
+    usuario_telegram: int | None = None
     model_config = ConfigDict(from_attributes=True)
 
 

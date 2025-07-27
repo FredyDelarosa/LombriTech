@@ -1,6 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime
 from core.db.Database import Base
+from sqlalchemy import BigInteger
 
 class User(Base):
     __tablename__ = "usuarios"
@@ -11,5 +12,5 @@ class User(Base):
     apellidos = Column(String(50), nullable=False)
     correo = Column(String(100), unique=True, nullable=False)
     password = Column("contrasena_hash", String, nullable=False)
-    usuario_telegram = Column(String(50), nullable=True)
+    usuario_telegram = Column(BigInteger, nullable=True)
     created_at = Column("creado_en", DateTime, default=datetime.utcnow)
