@@ -13,6 +13,7 @@ from compost_analysis.infrastructure.routes.analysis_routes import router as ana
 from alertas.infrastructure.routes.alerta_routes import router as alerta_router
 from compost_analysis.infrastructure.websockets.analysis_ws import router as ws_analysis
 from compost_data.infrastructure.adapters.broker_listener import start_data_consumer
+from reports.infrastructure.routes.report_route import router as report_router
 
 from admin.infrastructure.startup import create_default_admin
 
@@ -40,6 +41,7 @@ app.include_router(compost_router)
 app.include_router(analysis_router)
 app.include_router(alerta_router)
 app.include_router(ws_analysis)
+app.include_router(report_router)
 
 # Consumidor RabbitMQ en hilo separado
 def run_broker_consumer():
@@ -57,3 +59,5 @@ def startup_event():
 @app.on_event("startup")
 def on_startup():
     create_default_admin()
+    
+
