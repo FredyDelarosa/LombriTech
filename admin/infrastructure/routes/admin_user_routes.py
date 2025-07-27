@@ -9,6 +9,7 @@ from admin.infrastructure.handlers.create_user_controller import create_user_con
 from admin.infrastructure.handlers.list_users_controller import list_users_controller
 from admin.infrastructure.handlers.update_user_controller import update_user_controller
 from admin.infrastructure.handlers.delete_user_controller import delete_user_controller
+from admin.infrastructure.handlers.get_current_user_controller import get_current_user_controller
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
@@ -50,3 +51,11 @@ async def eliminar_usuario(
     db: Session = Depends(get_db),
 ):
     return await delete_user_controller(request, user_id, db)
+
+# ✅ NUEVA RUTA PARA USUARIO AUTENTICADO
+@router.get("/me", response_model=dict)
+async def obtener_datos_usuario_actual(
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    return await get_current_user_controller(request, db)
