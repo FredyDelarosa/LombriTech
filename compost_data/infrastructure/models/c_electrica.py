@@ -5,7 +5,7 @@ class ConductividadElectrica(Base):
     __tablename__ = "C_electrica"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    ec = Column(DECIMAL(5, 2))
-    tds = Column(DECIMAL(5, 2))
+    ec = Column(DECIMAL(8, 2))
+    tds = Column(DECIMAL(8, 2))
     fecha = Column(TIMESTAMP)
     composta_id = Column(Integer, ForeignKey("composta.id"))
