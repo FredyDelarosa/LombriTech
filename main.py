@@ -16,6 +16,7 @@ from compost_analysis.infrastructure.websockets.analysis_ws import router as ws_
 from compost_data.infrastructure.adapters.broker_listener import start_data_consumer
 from reports.infrastructure.routes.report_route import router as report_router
 from alertas.infrastructure.websocket.alertas_ws import router as alertas_ws
+from compost_data.infrastructure.websocket.compost_data_ws import router as compost_data_ws
 
 import asyncio
 import threading
@@ -51,6 +52,7 @@ app.include_router(notificaciones_router)
 app.include_router(ws_analysis)
 app.include_router(report_router)
 app.include_router(alertas_ws)
+app.include_router(compost_data_ws)
 
 def run_broker_consumer():
     print("Iniciando consumidor de RabbitMQ...")
